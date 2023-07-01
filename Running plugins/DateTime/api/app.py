@@ -7,7 +7,7 @@ from datetime import datetime
 import dotenv
 import os
 
-from models import PluginRequest, PluginResponse, EmptyData
+from .models import PluginRequest, PluginResponse, EmptyData
 
 
 app = FastAPI()
