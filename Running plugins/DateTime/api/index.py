@@ -1,10 +1,11 @@
-import os
-from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from datetime import datetime
+from fastapi import FastAPI, Request, Response
 from typing import Optional
 
+from datetime import datetime
 import dotenv
+import os
 
 from .models import PluginRequest, PluginResponse, EmptyData
 
@@ -13,6 +14,15 @@ app = FastAPI()
 
 dotenv.load_dotenv()
 DevID = os.environ["DevID"]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get('/')
