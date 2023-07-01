@@ -2,6 +2,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Request, Response
 from typing import Optional
+import uvicorn
 
 from datetime import datetime
 import dotenv
@@ -31,7 +32,6 @@ def online():
 
 
 class PluginException(Exception):
-
     def __init__(self, error: str, forced_response: Optional[str] = None):
         self.error = error
         self.forced_response = forced_response
@@ -77,7 +77,7 @@ async def manifest():
         "author_name": "Ethan Barr",
         "contact_email": "ethanwbarr07@gmail.com",
         "api": {
-            "base_url": "https://carter-plugin-template.ethanbarr07.repl.co/api",
+            "base_url": "https://carter-plugins-datetime.vercel.app/api",
             "endpoints": [
                 {
                     "name": "get_current_time_uk",
