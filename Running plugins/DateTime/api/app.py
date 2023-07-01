@@ -58,7 +58,7 @@ async def manifest():
     return {
         "manifest_version": "1",
         "developer_id": DevID,
-        "version": "1.1.1",
+        "version": "1.2.0",
         "name": "datetime",
         "name_for_human": "Datetime Plugin",
         "name_for_machine": "datetime",
