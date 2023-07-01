@@ -1,4 +1,3 @@
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Request, Response
 from typing import Optional
@@ -17,18 +16,9 @@ dotenv.load_dotenv()
 DevID = os.environ["DevID"]
 
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.get('/')
-def online():
-    return "online"
+@app.get("/")
+def api():
+    return "Running on Vercel"
 
 
 class PluginException(Exception):
@@ -135,3 +125,8 @@ async def get_current_date_uk(request: PluginRequest[EmptyData]):
     response = PluginResponse(
         success=True, data={"current_date": current_date})
     return response
+
+
+
+# if __name__ == '__main__':
+#     uvicorn.run("app:app", host:"0.0.0.0", port=5002, reload=True)
