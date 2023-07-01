@@ -4,10 +4,14 @@ from fastapi.responses import JSONResponse
 from datetime import datetime
 from typing import Optional
 
-from models import PluginRequest, PluginResponse, EmptyData
+import dotenv
+
+from .models import PluginRequest, PluginResponse, EmptyData
+
 
 app = FastAPI()
 
+dotenv.load_dotenv()
 DevID = os.environ["DevID"]
 
 
