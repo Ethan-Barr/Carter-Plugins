@@ -7,7 +7,7 @@ from datetime import datetime
 import dotenv
 import os
 
-from .models import PluginRequest, PluginResponse, EmptyData
+from models import PluginRequest, PluginResponse, EmptyData
 
 
 app = FastAPI()
@@ -129,4 +129,4 @@ async def get_current_date_uk(request: PluginRequest[EmptyData]):
 
 
 # if __name__ == '__main__':
-#     uvicorn.run("app:app", host:"0.0.0.0", port=5002, reload=True)
+#     uvicorn.run("app:app", host="0.0.0.0", port=5002, reload=True)
