@@ -5,6 +5,7 @@ import uvicorn
 
 from datetime import datetime
 import dotenv
+import pytz
 import os
 
 from .models import PluginRequest, PluginResponse, EmptyData
@@ -35,8 +36,7 @@ def plugin_exception_handler(request: Request, exc: PluginException):
             success=False,
             data=None,
             error=exc.error,
-            forced_response=(exc.forced_response if exc.forced_response is not None
-                            else None)).dict(exclude_none=True))
+            forced_response=(exc.forced_response if exc.forced_response is not None else None)).dict(exclude_none=True))
 
 
 @app.middleware("http")
@@ -56,62 +56,109 @@ async def verify_secret_token(request: Request, call_next):
 @app.get("/carterplugin.json")
 async def manifest():
     return {
-        "manifest_version": "1",
-        "developer_id": DevID,
-        "version": "1.2.0",
-        "name": "datetime",
-        "name_for_human": "Datetime Plugin",
-        "name_for_machine": "datetime",
-        "description_for_human": "Get the current date and time.",
-        "description_for_machine": "Get the current date and time.",
-        "author_name": "Ethan Barr",
-        "contact_email": "ethanwbarr07@gmail.com",
-        "api": {
-            "base_url": "https://carter-plugins-datetime.vercel.app/api",
-            "endpoints": [
-                {
-                    "name": "get_current_time_uk",
-                    "description": "Get the current date and time.",
-                    "path": "/get_current_time_uk",
-                    "input": [
-                        {
-                            "name": "current_time",
-                            "type": "string",
-                            "required": True,
-                            "description": "Collecting the current time",
-                            "example": "What is the time"
-                        }
-                    ],
-                    "output": [
-                        {
-                            "name": "current_time",
-                            "type": "string",
-                            "description": "The current date and time in ISO 8601 format.",
-                            "example": "2023-06-30T15:25:00"
-                        }
-                    ]
-                },
-                {
-                    "name": "get_current_date_uk",
-                    "description": "Get the current date.",
-                    "path": "/get_current_date_uk",
-                    "input": [],
-                    "output": [
-                        {
-                            "name": "current_date",
-                            "type": "string",
-                            "description": "The current date in ISO 8601 format.",
-                            "example": "2023-06-30"
-                        }
-                    ]
-                }
-            ]
+        {
+            "manifest_version": "1",
+            "developer_id": "YourDevID",
+            "version": "1.2.1",
+            "name": "datetime",
+            "name_for_human": "Datetime Plugin",
+            "name_for_machine": "datetime",
+            "description_for_human": "Get the current date and time.",
+            "description_for_machine": "Get the current date and time.",
+            "author_name": "Ethan Barr",
+            "contact_email": "ethanwbarr07@gmail.com",
+            "api": {
+                "base_url": "https://carter-plugins-datetime.vercel.app/api",
+                "endpoints": [
+                    {
+                        "name": "get_current_time",
+                        "description": "Get the current date and time.",
+                        "path": "/get_current_time",
+                        "input": [
+                            {
+                                "name": "current_time",
+                                "type": "string",
+                                "required": True,
+                                "description": "Collecting the current time",
+                                "example": "What is the time"
+                            }
+                        ],
+                        "output": [
+                            {
+                                "name": "current_time",
+                                "type": "string",
+                                "description": "The current date and time in ISO 8601 format.",
+                                "example": "2023-06-30T15:25:00"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "get_current_date",
+                        "description": "Get the current date.",
+                        "path": "/get_current_date",
+                        "input": [],
+                        "output": [
+                            {
+                                "name": "current_date",
+                                "type": "string",
+                                "description": "The current date in ISO 8601 format.",
+                                "example": "2023-06-30"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "get_current_date_timezone",
+                        "description": "Get the current date with timezone.",
+                        "path": "/get_current_date_timezone",
+                        "input": [
+                            {
+                                "name": "timezone",
+                                "type": "string",
+                                "required": True,
+                                "description": "Timezone to retrieve the current date.",
+                                "example": "What is the time in Europe/London"
+                            }
+                        ],
+                        "output": [
+                            {
+                                "name": "current_date",
+                                "type": "string",
+                                "description": "The current date in ISO 8601 format with timezone.",
+                                "example": "2023-06-30"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "get_current_time_timezone",
+                        "description": "Get the current time with timezone.",
+                        "path": "/get_current_time_timezone",
+                        "input": [
+                            {
+                                "name": "timezone",
+                                "type": "string",
+                                "required": True,
+                                "description": "Timezone to retrieve the current time.",
+                                "example": "What is the date in Europe/London"
+                            }
+                        ],
+                        "output": [
+                            {
+                                "name": "current_time",
+                                "type": "string",
+                                "description": "The current time in ISO 8601 format with timezone.",
+                                "example": "2023-06-30T15:25:00"
+                            }
+                        ]
+                    }
+                ]
+            }
         }
+
     }
 
 
 # Plugin code
-@app.post("/api/get_current_time_uk", response_model=PluginResponse, response_model_exclude_none=True)
+@app.post("/api/get_current_time", response_model=PluginResponse, response_model_exclude_none=True)
 async def get_current_time_uk(request: PluginRequest[EmptyData]):
     current_datetime = datetime.now().strftime("%H:%M:%S")
     response = PluginResponse(
@@ -119,11 +166,29 @@ async def get_current_time_uk(request: PluginRequest[EmptyData]):
     return response
 
 
-@app.post("/api/get_current_date_uk", response_model=PluginResponse, response_model_exclude_none=True)
+@app.post("/api/get_current_date", response_model=PluginResponse, response_model_exclude_none=True)
 async def get_current_date_uk(request: PluginRequest[EmptyData]):
     current_date = datetime.now().strftime("%Y-%m-%d")
     response = PluginResponse(
         success=True, data={"current_date": current_date})
+    return response
+
+
+@app.post("/api/get_current_date_timezone", response_model=PluginResponse, response_model_exclude_none=True)
+async def get_current_date_timezone(request: PluginRequest[EmptyData]):
+    timezone = request.data.timezone
+    tz = pytz.timezone(timezone)
+    current_date = datetime.now(tz).strftime("%Y-%m-%d")
+    response = PluginResponse(success=True, data={"current_date": current_date})
+    return response
+
+
+@app.post("/api/get_current_time_timezone", response_model=PluginResponse, response_model_exclude_none=True)
+async def get_current_time_timezone(request: PluginRequest[EmptyData]):
+    timezone = request.data.timezone
+    tz = pytz.timezone(timezone)
+    current_time = datetime.now(tz).strftime("%H:%M:%S")
+    response = PluginResponse(success=True, data={"current_time": current_time})
     return response
 
 

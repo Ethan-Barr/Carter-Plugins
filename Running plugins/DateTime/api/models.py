@@ -24,3 +24,14 @@ class EmptyData(BaseModel):
     pass
 
 # Custom models:
+class PluginRequest(BaseModel):
+    pass
+
+
+class PluginResponse(BaseModel):
+    success: bool
+    data: dict
+
+
+class EmptyData(BaseModel):
+    pass
